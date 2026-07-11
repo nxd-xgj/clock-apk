@@ -14,6 +14,8 @@ import android.widget.ListView
 import android.widget.TextView
 import android.widget.Toast
 
+private data class ServerEntry(val name: String, val host: String, val custom: Boolean)
+
 class SettingsActivity : Activity() {
 
     private lateinit var listView: ListView
@@ -56,14 +58,12 @@ class SettingsActivity : Activity() {
     private inner class ServerAdapter : BaseAdapter() {
 
         private val inflater = LayoutInflater.from(this@SettingsActivity)
-        private var entries: MutableList<Entry> = buildEntries()
+        private var entries: MutableList<ServerEntry> = buildEntries()
 
-        data class Entry(val name: String, val host: String, val custom: Boolean)
-
-        private fun buildEntries(): MutableList<Entry> {
-            val list = mutableListOf<Entry>()
-            for ((n, h) in ServerPrefs.defaultServers) list.add(Entry(n, h, false))
-            for (h in ServerPrefs.getCustomHosts(prefs)) list.add(Entry(h, h, true))
+        private fun buildEntries(): MutableList<ServerEntry> {
+            val list = mutableListOf<ServerEntry>()
+            for ((n, h) in ServerPrefs.defaultServers) list.add(ServerEntry(n, h, false))
+            for (h in ServerPrefs.getCustomHosts(prefs)) list.add(ServerEntry(h, h, true))
             return list
         }
 
