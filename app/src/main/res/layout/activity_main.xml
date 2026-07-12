@@ -28,6 +28,15 @@
             android:layout_marginTop="4dp"
             android:textColor="@android:color/white"
             android:text="----年--月--日  周-" />
+
+        <TextView
+            android:id="@+id/nextEntryText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:textColor="#888888"
+            android:textSize="18sp"
+            android:visibility="gone" />
     </LinearLayout>
 
     <TextView
