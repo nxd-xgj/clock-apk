@@ -20,6 +20,7 @@ import java.net.URL
 import org.json.JSONObject
 import java.util.UUID
 import android.util.Xml
+import org.xmlpull.v1.XmlPullParser
 
 class MainActivity : Activity() {
 
