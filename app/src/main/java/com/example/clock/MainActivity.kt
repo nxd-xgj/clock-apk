@@ -19,6 +19,7 @@ import java.net.HttpURLConnection
 import java.net.URL
 import org.json.JSONObject
 import java.util.UUID
+import android.util.Xml
 
 class MainActivity : Activity() {
 
@@ -98,7 +99,7 @@ class MainActivity : Activity() {
         val p = getSharedPreferences("clock", MODE_PRIVATE)
         nextEntryOn = p.getBoolean("next_entry_on", false)
         onlineOn = ServerPrefs.isOnlineOn(this)
-        onlineBase = ServerPrefs.getOnlineApiBase(this)
+        onlineBase = loadOnlineBase()
     }
 
     // 暗号：连续点击时间 10 次，或长按时间区域 ≥30 秒，切换「下次进入时间」显示
@@ -244,6 +245,26 @@ class MainActivity : Activity() {
             p.edit().putString("device_uuid", u).apply()
         }
         return u
+    }
+
+    // 从 APK 内置 assets/online_config.xml 读取 Worker 地址（发布前改此文件即可，设置界面不可改）
+    private fun loadOnlineBase(): String {
+        return try {
+            val parser = Xml.newPullParser()
+            parser.setInput(assets.open("online_config.xml"), "utf-8")
+            var url = ""
+            var event = parser.eventType
+            while (event != XmlPullParser.END_DOCUMENT) {
+                if (event == XmlPullParser.START_TAG && parser.name == "online") {
+                    url = parser.getAttributeValue(null, "url") ?: ""
+                    break
+                }
+                event = parser.next()
+            }
+            url.trim().trimEnd('/')
+        } catch (e: Exception) {
+            ""
+        }
     }
 
     private fun fetchOnline() {
