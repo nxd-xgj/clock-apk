@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <style name="Theme.Clock" parent="android:Theme.NoTitleBar.Fullscreen">
+    <!-- 升级为 Material 主题：老 Theme 下 Switch 无样式会导致「点击没反应」 -->
+    <style name="Theme.Clock" parent="android:Theme.Material.NoActionBar">
         <item name="android:windowBackground">@android:color/black</item>
         <item name="android:colorForeground">@android:color/white</item>
         <item name="android:statusBarColor">@android:color/black</item>
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
     </style>
 
 </resources>
