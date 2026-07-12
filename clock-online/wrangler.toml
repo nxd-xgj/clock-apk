@@ -1,0 +1,13 @@
+name = "clock-online"
+main = "worker.js"
+compatibility_date = "2024-09-23"
+
+# Durable Object 绑定：部署时 wrangler 会自动创建命名空间并绑定
+[[durable_objects.bindings]]
+name = "COUNTER"
+class_name = "OnlineCounter"
+
+# 首次部署需要这个迁移声明来注册 Durable Object 类
+[[migrations]]
+tag = "v1"
+new_classes = ["OnlineCounter"]
