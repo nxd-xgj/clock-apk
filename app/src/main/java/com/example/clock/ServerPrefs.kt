@@ -86,10 +86,4 @@ object ServerPrefs {
         ctx.getSharedPreferences("clock", Context.MODE_PRIVATE).edit().putBoolean("online_on", on).apply()
     }
 
-    fun getOnlineApiBase(ctx: Context): String =
-        ctx.getSharedPreferences("clock", Context.MODE_PRIVATE).getString("online_api_base", "") ?: ""
-
-    fun setOnlineApiBase(ctx: Context, base: String) {
-        ctx.getSharedPreferences("clock", Context.MODE_PRIVATE).edit().putString("online_api_base", base.trim()).apply()
-    }
 }
