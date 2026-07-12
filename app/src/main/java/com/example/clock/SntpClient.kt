@@ -6,7 +6,8 @@ import java.net.InetAddress
 
 /**
  * 极简 SNTP 客户端：向 NTP 服务器（UDP 123）请求时间，
- * 返回「服务器真实时间 - 本机时间」的偏移（毫秒），用于校正时钟。
+ * 返回「服务器真实时间 - 本机时间」的偏移（毫秒），用于校正时钟；
+ * 同时可取得网络往返延迟（毫秒）。
  */
 object SntpClient {
 
@@ -19,11 +20,18 @@ object SntpClient {
     private const val SECONDS_1900_TO_1970 = 2208988800L
     private const val TIMEOUT_MS = 8000
 
-    /**
-     * @return 本机时间需要加上的偏移量（毫秒）即为真实时间；失败抛出异常。
-     */
+    data class SntpResult(val offset: Long, val delay: Long)
+
+    /** 仅取时间偏移（兼容旧调用）。 */
     @Throws(Exception::class)
-    fun requestTime(host: String): Long {
+    fun requestTime(host: String): Long = core(host).offset
+
+    /** 取时间偏移 + 网络往返延迟（毫秒），用于延迟测试。 */
+    @Throws(Exception::class)
+    fun requestTimeWithDelay(host: String): SntpResult = core(host)
+
+    @Throws(Exception::class)
+    private fun core(host: String): SntpResult {
         val address = InetAddress.getByName(host)
         val socket = DatagramSocket()
         socket.soTimeout = TIMEOUT_MS
@@ -42,7 +50,10 @@ object SntpClient {
             val transmitTime = readTimeStamp(buffer, NTP_TRANSMIT_OFFSET)
 
             // 经典 SNTP 偏移计算
-            return ((receiveTime - requestTime) + (transmitTime - responseTime)) / 2
+            val offset = ((receiveTime - requestTime) + (transmitTime - responseTime)) / 2
+            // 网络往返延迟 = (本机收 - 本机发) - (服务器发 - 服务器收)
+            val delay = (responseTime - requestTime) - (transmitTime - receiveTime)
+            return SntpResult(offset, if (delay < 0) 0 else delay)
         } finally {
             socket.close()
         }
